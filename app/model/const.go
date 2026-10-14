@@ -62,6 +62,7 @@ const (
 	RpcEndpointAptos          ConfKey = "rpc_endpoint_aptos"             // APTOS RPC节点
 	RpcEndpointTron           ConfKey = "rpc_endpoint_tron"              // TRON RPC节点
 	RpcEndpointTronGridApiKey ConfKey = "rpc_endpoint_tron_grid_api_key" // TRON RPC节点 TronGrid Api Key
+	RpcEndpointTronDRPCApiKey ConfKey = "rpc_endpoint_tron_drpc_api_key" // TRON RPC节点 dRPC Api Key
 
 	RateSyncCoingeckoApiUrl ConfKey = "rate_sync_coingecko_api_url" // 汇率同步 Coingecko Api URL
 	RateSyncCoingeckoApiKey ConfKey = "rate_sync_coingecko_api_key" // 汇率同步 Coingecko Api Key
