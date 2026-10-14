@@ -111,6 +111,27 @@
                   </a-form-item>
                 </a-col>
               </a-row>
+              <a-row :gutter="16">
+                <a-col :span="12">
+                  <a-form-item
+                    field="rpc_endpoint_tron_drpc_api_key"
+                    label="dRPC API Key"
+                    :rules="[{ required: usesDRPC, message: '使用 dRPC 时请输入 API Key' }]"
+                    class="network-form-item"
+                  >
+                    <a-input-password
+                      v-model="formData.rpc_endpoint_tron_drpc_api_key"
+                      placeholder="使用 dRPC 节点时填写，多个 Key 可用半角逗号隔开"
+                      allow-clear
+                      size="small"
+                    />
+                    <template #extra>
+                      使用 dRPC 时将 Tron RPC 填为 grpc.drpc.live:443，并填写现有 dRPC Key。 TronGrid Key 与 dRPC Key
+                      分别保存，按所选节点使用。
+                    </template>
+                  </a-form-item>
+                </a-col>
+              </a-row>
             </div>
 
             <!-- 其他网络配置 -->
@@ -174,7 +195,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { Message } from "@arco-design/web-vue";
 import { getsConfAPI, setsConfAPI } from "@/api/modules/conf/index";
 import {
@@ -218,11 +239,14 @@ const saveLoading = ref<boolean>(false);
 const formRef = ref();
 const formData = reactive<Record<string, string>>({});
 const originalData = ref<Record<string, string>>({});
+const usesDRPC = computed(() =>
+  /^(?:(?:https|grpcs):\/\/|(?:dns|passthrough):\/\/\/)?grpc\.drpc\.live:443\/?$/i.test(formData.rpc_endpoint_tron?.trim() || "")
+);
 
 const getConf = async () => {
   try {
     loading.value = true;
-    const keys = [...networks.map(network => network.key), "rpc_endpoint_tron_grid_api_key"];
+    const keys = [...networks.map(network => network.key), "rpc_endpoint_tron_grid_api_key", "rpc_endpoint_tron_drpc_api_key"];
 
     const response = await getsConfAPI({ keys });
     const data = response.data || {};
@@ -231,6 +255,7 @@ const getConf = async () => {
       formData[network.key] = data[network.key] || "";
     });
     formData.rpc_endpoint_tron_grid_api_key = data.rpc_endpoint_tron_grid_api_key || "";
+    formData.rpc_endpoint_tron_drpc_api_key = data.rpc_endpoint_tron_drpc_api_key || "";
 
     originalData.value = { ...formData };
   } catch (error) {
@@ -282,6 +307,10 @@ const handleSave = async () => {
     saveData.push({
       key: "rpc_endpoint_tron_grid_api_key",
       value: tronApiKey
+    });
+    saveData.push({
+      key: "rpc_endpoint_tron_drpc_api_key",
+      value: formData.rpc_endpoint_tron_drpc_api_key?.trim() || ""
     });
 
     await setsConfAPI(saveData);

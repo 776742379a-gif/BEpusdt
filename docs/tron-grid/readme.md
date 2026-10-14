@@ -1,8 +1,10 @@
 # TronGrid
 
-> 系统默认内置 Tron 的公共RPC节点是：`grpc.trongrid.io:50051`，虽然目前无频率限制，但时间一长增加限制是必然趋势；
-> 所以强烈建议配置 TronGrid Api Key 提高 Tron 扫块稳定性，避免因节点频率限制导致订单确认失败等问题，
-> **而且基础服务计划足以满足个人需求，无需额外付费！**。
+> 系统默认 Tron gRPC 节点是 `grpc.trongrid.io:50051`。生产环境建议配置正式 TronGrid API Key；匿名访问的可用性、免费额度和费用以 TronGrid 当前服务政策及控制台为准。
+>
+> 空 Key 会被过滤，不再发送会触发 HTTP 401 的空鉴权字段。多个 Key 中的空项和前后空格也会被过滤。
+>
+> 使用现有 dRPC Key 的配置方法见 [TRON dRPC 接入](../tron-drpc.md)。
 
 ## 获取 Api Key
 

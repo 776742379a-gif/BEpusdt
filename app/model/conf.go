@@ -227,7 +227,11 @@ func GetInstallInfo() gin.H {
 }
 
 func GetTronGridApiKeys() []string {
-	return strings.Split(GetK(RpcEndpointTronGridApiKey), ",")
+	return utils.NormalizeTronAPIKeys(strings.Split(GetK(RpcEndpointTronGridApiKey), ","))
+}
+
+func GetTronDRPCApiKeys() []string {
+	return utils.NormalizeTronAPIKeys(strings.Split(GetK(RpcEndpointTronDRPCApiKey), ","))
 }
 
 func FillDefaultConf() {

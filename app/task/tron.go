@@ -36,6 +36,7 @@ type tron struct {
 	blockConfirmedOffset int
 	blockScanQueue       *chanx.UnboundedChan[int]
 	conn                 map[string]*grpc.ClientConn
+	connConfig           map[string][32]byte
 	connMu               sync.RWMutex
 }
 
@@ -54,6 +55,7 @@ func newTron() tron {
 		blockConfirmedOffset: 30,
 		blockScanQueue:       chanx.NewUnboundedChan[int](context.Background(), 30),
 		conn:                 make(map[string]*grpc.ClientConn),
+		connConfig:           make(map[string][32]byte),
 	}
 }
 
@@ -497,11 +499,15 @@ func (t *tron) syncBreak() bool {
 
 func (t *tron) client() (*grpc.ClientConn, error) {
 	var endpoint = model.Endpoint(conf.Tron)
+	config := utils.TronGRPCConfig{
+		Endpoint: endpoint, TronGridAPIKeys: model.GetTronGridApiKeys(), DRPCAPIKeys: model.GetTronDRPCApiKeys(),
+	}
+	fingerprint := config.Fingerprint()
 
 	t.connMu.RLock()
 	if c, ok := t.conn[endpoint]; ok {
 		state := c.GetState()
-		if state == connectivity.Ready || state == connectivity.Idle {
+		if t.connConfig[endpoint] == fingerprint && (state == connectivity.Ready || state == connectivity.Idle) {
 			t.connMu.RUnlock()
 
 			return c, nil
@@ -517,7 +523,7 @@ func (t *tron) client() (*grpc.ClientConn, error) {
 
 	if c, ok := t.conn[endpoint]; ok {
 		state := c.GetState()
-		if state == connectivity.Ready || state == connectivity.Idle {
+		if t.connConfig[endpoint] == fingerprint && (state == connectivity.Ready || state == connectivity.Idle) {
 
 			return c, nil
 		}
@@ -525,13 +531,14 @@ func (t *tron) client() (*grpc.ClientConn, error) {
 		c.Close()
 	}
 
-	conn, err := utils.NewTronGrpcClient(endpoint, model.GetTronGridApiKeys())
+	conn, err := utils.NewTronGrpcClientWithConfig(config)
 	if err != nil {
 
 		return nil, fmt.Errorf("连接失败: %w", err)
 	}
 
 	t.conn[endpoint] = conn
+	t.connConfig[endpoint] = fingerprint
 	log.Task.Info("Tron gRPC 连接已建立:", endpoint)
 
 	return conn, nil
