@@ -41,5 +41,5 @@ TronGrid 配置继续使用原来的地址和独立 Key 字段。两种配置都
 - 后台 TypeScript 检查、Vite 生产构建、RPC 配置页面 ESLint 与 Prettier 检查均通过。格式化后的改动仅调整行布局，已构建页面包含 dRPC 配置字段。
 - 修复后的实际 Go 客户端使用现有 dRPC Key 完成只读测试：最新区块、指定区块及已知成功交易回执均正确返回；回执哈希匹配且交易成功。
 - Linux/amd64 程序使用 Go 1.24.3、`CGO_ENABLED=0` 构建，包含后台页面。输出为 `dist/bepusdt-linux-amd64`，版本标识 `v1.23.5-94ba4b7-drpc-local`；SHA-256：`695409ed2ce3c66afeb3c477e71570eee8fe5ed187ce3c397e3da74497b46ba2`。
-- 本地 Docker daemon 未运行，因此没有生成或运行容器镜像。本次没有生产部署、节点配置写入、订单变更或完整自动付款验收。
-- 状态：本地任务分支 `codex/tron-drpc-auth`，尚未 commit、push 或创建 PR；部署前仍须确认正式 commit 和备份。
+- 本地验证阶段 Docker daemon 未运行，当时未生成或运行容器镜像，也未执行生产部署、节点配置写入或完整自动付款验收。
+- 本地验证阶段的任务分支为 `codex/tron-drpc-auth`。后续已授权上线的来源 commit、镜像、备份和验证结果见 [2026-10-14 部署记录](./TRON_DRPC_DEPLOYMENT_2026_10_14.md)。
